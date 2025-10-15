@@ -5,6 +5,23 @@ from player import Player
 from asteroid import Asteroid
 from asteroidfield import AsteroidField
 from shot import Shot
+import score
+
+
+# ----- LIST OF POTENTIAL IMPROVEMENTS -----
+# Add a scoring system ✅
+# Implement multiple lives and respawning 
+# Add an explosion effect for the asteroids
+# Add acceleration to the player movement
+# Make the objects wrap around the screen instead of disappearing
+# Add a background image
+# Create different weapon types
+# Make the asteroids lumpy instead of perfectly round
+# Make the ship have a triangular hit box instead of a circular one
+# Add a shield power-up
+# Add a speed power-up
+# Add bombs that can be dropped
+# ------------------------------------------
 
 def main():
     pygame.init()
@@ -31,6 +48,8 @@ def main():
 
     Asteroid_Field = AsteroidField()
 
+    score.load()
+
     while True:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -42,15 +61,20 @@ def main():
         for obj in drawable:
             obj.draw(screen)
 
-        # python
         for asteroid in asteroids:
             if player.collides_with(asteroid):
                 print("Game over!")
+                if score.get() > score.get_high():
+                    print("NEW HIGH SCORE!")
+                print(f"Your Score: {score.get()}")
+                print(f"High Score: {score.get_high()}")
+                score.reset()
                 sys.exit()
             for shot in shots:
                 if asteroid.collides_with(shot):
                     shot.kill()
                     asteroid.split()
+                    score.add()
 
         pygame.display.flip()
 
