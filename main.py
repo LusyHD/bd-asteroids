@@ -32,6 +32,7 @@ def main():
 
     clock = pygame.time.Clock()
     dt = 0
+    font = pygame.font.SysFont(None, 24)
 
     updatable = pygame.sprite.Group()
     drawable = pygame.sprite.Group()
@@ -54,27 +55,39 @@ def main():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 return
-
+        
         updatable.update(dt)
+
+        if not player.alive and player.lives <= 0:
+            print("Game over!")
+            if score.get_prev_high() is not None:
+                if score.get() > score.get_prev_high():
+                    print("NEW HIGH SCORE!")
+                    print(f"Your Score: {score.get()}")
+                    print(f"Previous High Score: {score.get_prev_high()}")
+            else:
+                print(f"Your Score: {score.get()}")
+                print(f"High Score: {score.get_high()}")
+            score.reset()
+            sys.exit()
 
         screen.fill("black")
         for obj in drawable:
             obj.draw(screen)
 
-        for asteroid in asteroids:
-            if player.collides_with(asteroid):
-                print("Game over!")
-                if score.get() > score.get_high():
-                    print("NEW HIGH SCORE!")
-                print(f"Your Score: {score.get()}")
-                print(f"High Score: {score.get_high()}")
-                score.reset()
-                sys.exit()
-            for shot in shots:
-                if asteroid.collides_with(shot):
-                    shot.kill()
-                    asteroid.split()
-                    score.add()
+        text_surface = font.render(f"Lives: {player.lives}", True, (255, 255, 255))
+        screen.blit(text_surface, (10, 10))
+
+        if player.alive and not player.invulnerability:
+            for asteroid in asteroids:
+                if player.collides_with(asteroid):
+                    player.player_death()
+                    break  # avoid multiple hits this frame
+                for shot in shots:
+                    if asteroid.collides_with(shot):
+                        shot.kill()
+                        asteroid.split()
+                        score.add()
 
         pygame.display.flip()
 

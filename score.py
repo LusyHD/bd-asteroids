@@ -3,6 +3,7 @@ from pathlib import Path
 
 _score = 0
 _high_score = 0
+_prev_high_score = None
 _path = Path("highscore.json")
 
 def load():
@@ -22,11 +23,14 @@ def save():
 def reset():
     global _score
     _score = 0
+    _prev_high_score = None
 
 def add(points=1):
-    global _score, _high_score
+    global _score, _high_score, _prev_high_score
     _score += points
     if _score > _high_score:
+        if _prev_high_score is None:
+            _prev_high_score = _high_score
         _high_score = _score
         save()
 
@@ -35,3 +39,6 @@ def get():
 
 def get_high(): 
     return _high_score
+
+def get_prev_high():
+    return _prev_high_score
