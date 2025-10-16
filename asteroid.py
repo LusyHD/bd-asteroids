@@ -12,6 +12,7 @@ class Asteroid(CircleShape):
     
     def update(self, dt):
         self.position += self.velocity * dt
+        self.wrap_position() # Hard Mode
 
     def split(self):
         self.kill()
@@ -28,3 +29,9 @@ class Asteroid(CircleShape):
         a_1.velocity = (a * 1.2)
         a_2 = Asteroid(self.position.x, self.position.y, new_radius)
         a_2.velocity = (b * 1.2)
+
+    def wrap_position(self):
+        if self.position.x < 0: self.position.x = SCREEN_WIDTH
+        if self.position.x > SCREEN_WIDTH: self.position.x = 0
+        if self.position.y < 0: self.position.y = SCREEN_HEIGHT
+        if self.position.y > SCREEN_HEIGHT: self.position.y = 0
